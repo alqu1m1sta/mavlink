@@ -1,100 +1,175 @@
-[![Build Status](https://travis-ci.org/mavlink/mavlink.svg?branch=master)](https://travis-ci.org/mavlink/mavlink)
+# QGroundControl
+## Open Source Micro Air Vehicle Ground Control Station
 
-## MAVLink ##
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mavlink/qgroundcontrol?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-*   Official Website: http://mavlink.org
-*   Source: [Mavlink Generator](https://github.com/mavlink/mavlink)
-*   Binaries (always up-to-date from master):
-  * [C/C++ header-only library](https://github.com/mavlink/c_library)
-*   Mailing list: [Google Groups](http://groups.google.com/group/mavlink)
 
-MAVLink -- Micro Air Vehicle Message Marshalling Library.
+* Project:
+<http://qgroundcontrol.org>
 
-This is a library for lightweight communication between Micro Air Vehicles (swarm) and/or ground control stations. It allows for defining messages within XML files, which then are converted into appropriate source code for different languages. These XML files are called dialects, most of which build on the *common* dialect provided in `common.xml`.
+* Files:
+<http://github.com/mavlink/qgroundcontrol>
 
-The MAVLink protocol performs byte-level serialization and so is appropriate for use with any type of radio modem.
+* Credits:
+<http://qgroundcontrol.org/credits>
 
-This repository is largely Python scripts that convert XML files into language-specific libraries. There are additional Python scripts providing examples and utilities for working with MAVLink data. These scripts, as well as the generated Python code for MAVLink dialects, require Python 2.7 or greater.
 
-Note that there are two incompatible versions of the MAVLink protocol: v0.9 and v1.0. Most programs, including [QGroundControl](https://github.com/mavlink/qgroundcontrol), have switched over to v1.0. The v0.9 protocol is **DEPRECATED** and should only be used to maintain backwards compatibility where necessary.
+## Documentation
+For generating documentation, refer to this readme or the <http://qgroundcontrol.org> website.
 
-### Requirements ###
-  * Python 2.7+
-    * Tkinter (if GUI functionality is desired)
+## Obtaining source code
+There are three ways to obtain the QGroundControl source code from our GitHub repository. You can either download a snapshot of the code in a ZIP file, clone the repository, or fork the repository if you plan to contribute to development. If you prefer one of the last two options you will need Git installed on your system; goto GitHub Help and see Set Up Git.
 
-### Installation ###
-  1. Clone into a user-writable directory.
-  2. Add the repository directory to your `PYTHONPATH`
-  3. Generate MAVLink parser files following the instructions in the next section *AND/OR* run included helper scripts described in the Scripts/Examples secion.
+### Clone the Repository
+This option assumes that you have Git already. To clone (checkout) the QGC repository, run the following command in the directory that you want the qgroundcontrol folder to be created:
 
-### Generating Language-specific Source Files ###
+```
+git clone --recursive git://github.com/mavlink/qgroundcontrol.git
+```
 
-Language-specific files can be generated via a Python script from the command line or using a GUI. If a dialect XML file has a dependency on another XML file, they must be located in the same directory. Since most MAVLink dialects depend on the **common** messageset, it is recommend that you place your dialect with the others in `/message_definitions/v1.0/`.
+### Fork the Repository
+If you plan to contribute to the development of QGC, you will want this option, which also requires that you have Git set up. To fork the QGC repository, do the following:
 
-Available languages are:
+Goto GitHub Help and see Fork A Repo
+Fork the QGC Repo
 
-  * C
-  * C#
-  * Java
-  * JavaScript
-  * Lua
-  * Python, version 2.7+
+### Initialize submodules
+After cloning or forking you will need to initialize and update the submodules using these commands in you qgroundcontrol source directory:
 
-#### From a GUI (recommended) ####
+```
+git submodule init
+git submodule update
+```
 
-mavgenerate.py is a header generation tool GUI written in Python. It requires Tkinter, which is only included with Python on Windows, so it will need to be installed separately on non-Windows platforms. It can be run from anywhere using Python's -m argument:
+Each time you pull new source to your repository you should re-run "git submodule update" to get the latest submodules as well.
 
-    $ python -m mavgenerate
+## Building QGroundControl
+QGroundControl builds are supported for OSX, Linux and Windows. See the individual sections below for instruction on how to build on each OS. Also make sure to look at the "Additional Build Notes" section below.
 
-#### From the command line ####
+### Build on Mac OSX
+Supported builds are 64 bit, built using the clang compiler.
 
-mavgen.py is a command-line interface for generating a language-specific MAVLink library. This is actually the backend used by `mavgenerate.py`. After the `mavlink` directory has been added to the Python path, it can be run by executing from the command line:
+#### Install QT
+- - -
+1. Download Qt 5.4 from: <http://download.qt-project.org/official_releases/qt/5.4/5.4.0/qt-opensource-mac-x64-clang-5.4.0.dmg>
+2. Double click the package installer and follow instructions.
 
-    $ python -m pymavlink.tools.mavgen
+#### Build QGroundControl
+1. From the terminal change directory to your `groundcontrol` directory
+2. Run `~/Qt/5.4/clang_64/bin/qmake qgroundcontrol.pro -r -spec macx-clang`. If you installed a different version of Qt, or installed to a different location you may need to change the first portion of the path.
+3. Run `make`
 
-### Usage ###
+### Build on Linux
+Supported builds for Linux are 32 or 64-bit, built using gcc.
 
-Using the generated MAVLink dialect libraries varies depending on the language, with language-specific details below:
+#### Install Qt5.4 and SDL1.2 prerequistites
+* For Fedora: `sudo yum install qt-creator qt5-qtbase-devel qt5-qtdeclarative-devel qt5-qtserialport-devel qt5-qtsvg-devel qt5-qtwebkit-devel SDL-devel SDL-static systemd-devel qt5-qtgraphicaleffects qt5-qtquickcontrols`
+* For Arch Linux: `pacman -Sy qtcreator qt5-base qt5-declarative qt5-serialport qt5-svg qt5-webkit`
+* For Ubuntu: Please be aware that the time of writing, Qt5.4 is unavailable in the official repositories Ubuntu 14.04/Mint 17
+    * Add this PPA to your sources.list: `ppa:beineri/opt-qt541-trusty`
+        * If you get a 404 error from "apt-get update" below, open System Settings:Software & Updates:Other Software and edit the entry for opt-qt541-trusty to reference Distribution: trusty.
+    * Run the following in your terminal: `sudo apt-get update && sudo apt-get install qt54tools qt54base qt54declarative qt54serialport qt54svg qt54webkit qt54quickcontrols qt54xmlpatterns qt54x11extras qt54websockets qt54sensors qt54script qt54quick1 qt54qbs qt54multimedia qt54location qt54imageformats qt54graphicaleffects qt54creator qt54connectivity`
+    * Next, set the environment variables by executing in the terminal: `source /opt/qt54/bin/qt54-env.sh` or copy and paste the contents to your `~/.profile` file to set them on login.
+    * Verify that the variables have been set: `echo $PATH && echo $QTDIR`. The output should read `/opt/qt54/bin:...` and `/opt/qt54`.
 
-#### C ####
-To use MAVLink, include the *mavlink.h* header file in your project:
+#### [Optional] Install additional libraries
+* For text-to-speech (espeak)
+	* For Ubuntu: `sudo apt-get install espeak libespeak-dev`
+	* For Fedora: `sudo yum install espeak espeak-devel`
+	* For Arch Linux: `pacman -Sy espeak`
+* For 3D flight view (openscenegraph)
+	* For Ubuntu: `sudo apt-get install libopenscenegraph-dev`
+	* For Fedora: `sudo yum install OpenSceneGraph`
+	* For Arch Linux: `pacman -Sy openscenegraph`
 
-    #include <mavlink.h>
+#### Build QGroundControl
+1. Change directory to you `qgroundcontrol` source directory.
+2. Run `qmake`
+3. Run `make`
 
-Do not include the individual message files. In some cases you will have to add the main folder to the include search path as well. To be safe, we recommend these flags:
+### Build on Windows
+Supported builds for Windows are 32 bit only built using Visual Studio 2013 or higher.
 
-    $ gcc -I mavlink/include -I mavlink/include/<your message set, e.g. common>
+#### Install Visual Studio Express 2013
+Only compilation using Visual Studio 2013 is supported. Download and install Visual Studio Express Edition (free) from here: <http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop>. Make sure you install the Windows Desktop version.
 
-The C MAVLink library utilizes a channels metaphor to allow for simultaneous processing of multiple MAVLink streams in the same program. It is therefore important to use the correct channel for each operation as all receiving and transmitting functions provided by MAVLink require a channel. If only one MAVLink stream exists, channel 0 should be used by using the `MAVLINK_COMM_0` constant.
+#### Install Qt5.4
+Download Qt 5.4 from here: <http://download.qt-project.org/official_releases/qt/5.4/5.4.0/qt-opensource-windows-x86-msvc2013_opengl-5.4.0.exe>
+  * The Qt variant should be for VS 2013, 32 bit (not 64) and include opengl.
 
-##### Receiving ######
-MAVLink reception is then done using `mavlink_helpers.h:mavlink_parse_char()`.
+#### Build QGroundControl
+1. Open the Qt Command Prompt program from the Start Menu
+2. Change directory to your 'qgroundcontrol' source folder.
+3. Run `qmake -tp vc qgroundcontrol.pro`.  This will create a 'qgroundcontrol.vcxproj' project file which is capable of building both debug and release configurations.
+4. Now open the generated 'qgroundcontrol.vcxproj' file in Visual Studio.
+5. Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run qmake from step 3.
 
-##### Transmitting #####
-Transmitting can be done by using the `mavlink_msg_*_pack()` function, where one is defined for every message. The packed message can then be serialized with `mavlink_helpers.h:mavlink_msg_to_send_buffer()` and then writing the resultant byte array out over the appropriate serial interface.
+### Additional build notes for all supported OS
 
-It is possible to simplify the above by writing wrappers around the transmitting/receiving code. A multi-byte writing macro can be defined, `MAVLINK_SEND_UART_BYTES()`, or a single-byte function can be defined, `comm_send_ch()`, that wrap the low-level driver for transmitting the data. If this is done, `MAVLINK_USE_CONVENIENCE_FUNCTIONS` must be defined.
+* Debug Builds: By default qmake will create makefiles for a release build. If you want a debug build add `CONFIG+=debug` to the command line.
+* Warnings as Errors: Specifying `CONFIG+=WarningsAsErrorsOn` will turn all warnings into errors which break the build. If you are working on a pull request you plan to submit to github for consideration, you should always run with this settings turned on, since it is required for all pull requests. NOTE: Putting this line into a file called "user_config.pri" in the top-level directory will set this flag on all builds without interfering with the GIT history.
+* Parallel builds: For Linux and OSX you can use the '-j#' option to run parellel builds. On Windows parallel builds are on by default.
+* Location of built files: Individual build file results can be found in the `build_debug` or `build_release` directories. The built executable can be found in the `debug` or `release` directory.
+* Incremental builds: Incremental builds may not be 100% reliable. If you find something strange happening that seems like a bad build. Delete your `build_debug` and `build_release` directories and run qmake again.
+* Single release congfiguration on Windows: If you want to build a vs project that does not create both debug and release builds. Include `CONFIG-=debug_and_release` on the qmake command line plus either `CONFIG+=debug` or 
+`CONFIG+=release` depending on the build type you want.
+* Build using QtCreator: It is possible to build and debug using QtCreator as well. The above instructions should provide you with enough information to setup QtCreator on OSX and Linux. QtCreator on Windows is supposedly possible but we don't have any instructions available for that.
+* Google Earth is only supported on 32 bit builds, which by default means only Windows builds.
+* QGroundControl is using the Qt QLoggingCategory class for logging (<http://qt-project.org/doc/qt-5/qloggingcategory.html>). Since logging is on by default, an example qtlogging.ini file is included at the root of the repository which disables logging. Follow the instructions from Qt as to why and where to put this file. You can then edit the file to get a logging level that suits your needs.
 
-### Scripts/Examples ###
-This MAVLink library also comes with supporting libraries and scripts for using, manipulating, and parsing MAVLink streams within the pymavlink, pymav
-link/tools, and pymavlink/examples directories.
+## Additional functionality
+QGroundcontrol has functionality that is dependent on the operating system and libraries installed by the user. The following sections describe these features, their dependencies, and how to disable/alter them during the build process. These features can be forcibly enabled/disabled by specifying additional values for variables either at the command line when calling `qmake` or in the `user_config.pri`. When calling `qmake` additional variables can be set using the syntax `VARIABLE="SPACE_SEPARATED_VALUES"`, which can be repeated for multiple variables. For example: `qmake DEFINES="DISABLE_QUPGRADE DISABLE_SPEECH" MAVLINK_CONF="sensesoar"` disables the QUpgrade widget, speech functionality, and sets the MAVLink dialect to sensesoar. These values can be more permanently specified by setting them in the `user_config.pri` file in the root directly. Create this file as a plain text file and ensure it ends in .pri (not .pri.txt!).
 
-The scripts have the following requirements:
-  * Python 2.7+
-  * mavlink repository folder in `PYTHONPATH`
-  * Write access to the entire `mavlink` folder.
-  * Your dialect's XML file is in `message_definitions/*/`
+**NOTE:** Any variables specified at the command line call to `qmake` will override those set in `user_config.pri`.
 
-Running these scripts can be done by running Python with the '-m' switch, which indicates that the given script exists on the PYTHONPATH. This is the proper way to run Python scripts that are part of a library as per PEP-328 (and the rejected PEP-3122). The following code runs `mavlogdump.py` in `/pymavlink/tools/` on the recorded MAVLink stream `test_run.mavlink` (other scripts in `/tools` and `/scripts` can be run in a similar fashion):
+### QUpgrade
+QUpgrade is a submodule (a Git feature like a sub-repository) that contains extra functionality. It is compiled in by default if it has initialized and updated. It can be disabled by specifying `DISABLE_QUPGRADE` in the `DEFINES` variable.
 
-    $ python -m pymavlink.tools.mavlogdump test_run.mavlink
+To include QUpgrade functionality run the following (only needs to be done once after cloning the qggroundcontrol git repository):
+* `git submodule init`
+* `git submodule update`
 
-### License ###
+The QUpgrade module relies on `libudev` on Linux platforms, so be sure to install the development version of that package.
 
-MAVLink is licensed under the terms of the Lesser General Public License (version 3) of the Free Software Foundation (LGPLv3). The C-language version of MAVLink is a header-only library, and as such compiling an application with it is considered "using the library", not a derived work. MAVLink can therefore be used without limits in any closed-source application without publishing the source code of the closed-source application.
+### Specifying MAVLink dialects
+The MAVLink dialect compiled by default by QGC is for the pixhawk. Setting the `MAVLINK_CONF` variable sets the dialects.
 
-See the *COPYING* file for more info.
+### Opal-RT's RT-LAB simulator
+Integration with Opal-RT's RT-LAB simulator can be enabled on Windows by installing RT-LAB 7.2.4. This allows vehicles to be simulated in RT-LAB and communicate directly with QGC on the same computer as if the UAS was actually deployed. This support is enabled by default once the requisite RT-LAB software is installed. Disabling this can be done by adding `DISABLE_RTLAB` to the `DEFINES` variable.
 
-### Credits ###
+### Speech syntehsis
+QGroundcontrol can notify the controller of information via speech synthesis. This requires the `espeak` library on Linux. On Mac and Windows support is built in to the OS as of OS X 10.6 (Snow Leopard) and Windows Vista. This support is enabled by default on all platforms if the dependencies are met. Disabling this functionality can be done by adding `DISABLE_SPEECH` to the `DEFINES` variable.
 
-&copy; 2009-2014 [Lorenz Meier](mailto:mail@qgroundcontrol.org)
+### 3D view
+The OpenSceneGraph libraries provide 3D rendering to the map overlays that QGC can provide.
+
+OpenSceneGraph support is built-in to Mac OS X. On Linux it is commonly available through the libopenscenegraph and libopenscenegraph-qt developer packages. Windows support does not currently exist. This functionality with be automatically built if the proper libraries are installed. Disabling this feature can be done by adding `DISABLE_OPEN_SCENE_GRAPH` to the `DEFINES` variable.
+
+### 3D mouse support
+Connexion's 3D mice are supported through the 3DxWARE driver available on Linux and Windows. Download and install the driver from 3DConnexion to enable support. This support is enabled by default with driver installation. To disable add `DISABLE_3DMOUSE` to the `DEFINES` variable.
+
+### XBee support
+QGroundControl can talk to XBee wireless devices using their proprietary protocol directly on Windows and Linux platforms. This support is not necessary if you're not using XBee devices or aren't using their proprietary protocol. On Windows, the necessary dependencies are included in this repository and no additional steps are required. For Linux, change to the `libs/thirdParty/libxbee` folder and run `make;sudo make install` to install libxbee on your system (uninstalling can be done with a `sudo make uninstall`). `qmake` will automatically detect the library on Linux, so no other work is necessary.
+
+To disable XBee support you may add `DISABLE_XBEE` to the DEFINES argument.
+
+## Repository Layout
+The following describes the directory structure and important files in the QGroundControl repository
+
+Folders:
+
+  * data     - Miscellaneous support files.
+  * deploy   - Contains scripts for packaging QGC for all supported systems.
+  * doc      - Output directory for generated Doxygen documentation. See README contained within for details.
+  * files    - Contains miscellaneous data including vehicle models and autopilot-specific data files.
+  * images   - UI images.
+  * libs     - Library dependencies for QGC.
+  * qupgrade - Source file for the qupgrade, a firmware flashing utility for the APM. Compiled into QGC by default.
+  * qml      - QML source files for the project.
+  * src      - Source code for QGroundControl. Split into subfolders for communications, user interface, autopilot-specific files, etc.
+  * tools    - Additional tools for developers.
+
+Important files:
+
+  * qgroundcontrol.pro - Primary project file for building QGC. Open this in qtcreator or pass this to qmake on the command line to build QGC.
+  * qgcvideo.pro       - Builds a standalone executable for viewing UDP video streams from a vehicle.
